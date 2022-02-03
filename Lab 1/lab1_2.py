@@ -34,10 +34,10 @@ Brief discussion :
 import re,math ,collections,statistics,itertools
 
 # FILE NAME
-plaintextFileName = 'plaintext2.txt'
-cipherFileName = 'cyphertext3.txt'
-keyFileName = 'key2.txt'
-originaltxtFileName = 'original_plaintxt.txt'
+#plaintextFileName = 'plaintext2.txt'
+cipherFileName = 'output.txt'
+#keyFileName = 'key2.txt'
+originaltxtFileName = 'input.txt'
 # mapping characters
 
 chara = 'B'
@@ -54,7 +54,7 @@ for i in range(26):
     alphlist.append(chr(ord(chara)+i))
     alphlist_lower.append(chr(ord(chara)+i))
 
-
+print(alphlist_lower)
 
 """
 alphlist = ['a']
@@ -65,8 +65,8 @@ print(alphlist)
 """
 # open files
 cipherFile = open(cipherFileName,'r+')
-plainFile = open(plaintextFileName,'w+')
-keyFile = open(keyFileName ,'r+')
+# = open(plaintextFileName,'w+')
+#keyFile = open(keyFileName ,'r+')
 original_plaintxtFile = open(originaltxtFileName,'r+')
 # read cipher text
 cipherText = cipherFile.read()
@@ -240,7 +240,7 @@ freq_count =len(frequency)      # number of factors generated
 # we will take maximum 4 factors here, 
 # so if factors are less than 4, we will take that count
 if(freq_count>4):
-    freq_count = 4
+    freq_count = 10
     
     
 # get the top frequent factors & create a copy
@@ -268,9 +268,10 @@ for i in range(len(most_freq_two_list2)):
 # keylen prediction completed 
 
 #pred_keylen =   most_freq_two_list2[0][0]
+"""
 pred_keylen = 6
 fst_nth = ""
-
+"""
 # this function get every n'th character from the cipher text
 def get_nth_char_string(n):
     temp=""
@@ -292,7 +293,8 @@ def predicted_nth_letter(fst_nth):
     # get the most common letter
     letter = most_commonn_letter[0][0]
     # predict the key letter assuming the most common letter is 'e'
-    predicted_key = alphlist_lower[(dicti[letter.lower()]-dicti['e'])%52]
+    print(letter.lower())
+    predicted_key = alphlist_lower[(dicti[letter.lower()]-dicti['e'])%26]
     return predicted_key
     
 """        
@@ -307,17 +309,21 @@ print(most_commonn_letter)
 """
 
 # predict the key
-predicted_key=""
-for i in range(pred_keylen):
-    checktxt = get_nth_char_string(i)
-    check_key = predicted_nth_letter(checktxt)
-    print(check_key) 
-    predicted_key+=check_key
-print(predicted_key)
-
-
+def predict_the_key(pred_keylen):
+    predicted_key=""
+    for i in range(pred_keylen):
+        
+        checktxt = get_nth_char_string(i)
+        check_key = predicted_nth_letter(checktxt)
+        print(check_key) 
+        predicted_key+=check_key
+    print(predicted_key)
+    return predicted_key
+#print(predicted_key)
+"""
+predicted_key = predict_the_key(pred_keylen)
 get_the_plaintxt = cypherToPlain(cipherTextClean, predicted_key)
-
+"""
 #print(get_the_plaintxt)
 
 def get_percantage_of_match(get_the_plaintxt,original_plaintxt):
@@ -332,9 +338,16 @@ def get_percantage_of_match(get_the_plaintxt,original_plaintxt):
         
     print(successcount )       
     return (successcount/len(get_the_plaintxt))*100
-print(get_percantage_of_match(get_the_plaintxt,original_plaintxt))            
+#print(get_percantage_of_match(get_the_plaintxt,original_plaintxt)) 
+
+for i in range(len(most_freq_two_list2)):
+    pred_keylen = most_freq_two_list2[i][0]
+    predicted_key = predict_the_key(pred_keylen)
+    get_the_plaintxt = cypherToPlain(cipherTextClean, predicted_key)
+    print("for length : "+str(pred_keylen))
+    print(get_percantage_of_match(get_the_plaintxt,original_plaintxt))           
 # close the file
 cipherFile.close()
-plainFile.close()
-keyFile.close()
+#plainFile.close()
+#keyFile.close()
     

@@ -6,8 +6,8 @@ Created on Sun Jan 30 22:13:44 2022
 """
 import re
 
-inputFileName = 'plaintext.txt'
-outputFileName = 'cyphertext.txt'
+inputFileName = 'input.txt'
+outputFileName = 'output.txt'
 keyFileName = 'key.txt'
 
 # mapping characters
