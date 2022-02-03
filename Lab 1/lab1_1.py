@@ -1,16 +1,38 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Jan 30 22:13:44 2022
 
-@author: User
+
+@author: 
+
+Zulker Nayeen
+
+Roll- FH-11
+4th year 1st Semester
+
+Course : Cryptography & Security Lab
+
+Labwork : Cryptoanalysis & Cracking Vigenere cipher 
+
+Brief discussion : 
+    After finding an easy way to break ceaser cipher, Vignere cipher was 
+    introduced. 
+    
+    Vignere cipher dont necessarily need long key, rather 
+    it uses same key repeatedly to creat e long key of size of the plain text
+    so even if plain text has repeated word, it faces different key to encrypt
+    itself, thus makes it quit impossible to guess by frequency analysis
+    
 """
 import re
 
+# file name
 inputFileName = 'input.txt'
 outputFileName = 'output.txt'
 keyFileName = 'key.txt'
 
 # mapping characters
+# dictionary will map as : {A:0, B:1, C:2....., Z:25, a:26,b:27 ...}
+# alphlist will map : [A,B,C......Z,a,b,c,..z]
 chara = 'B'
 i = 0
 dicti = {'A':i}
@@ -22,8 +44,9 @@ chara = 'a'
 for i in range(26):
     dicti.update({chr(ord(chara)+i):i+26})
     alphlist.append(chr(ord(chara)+i))
-print(dicti)
-print(alphlist)
+#print(dicti)
+#print(alphlist)
+
 # open file 
 
 inputFile = open(inputFileName,'r+')
@@ -32,14 +55,16 @@ keyFile = open(keyFileName,'r+')
 
 #" ".join(re.split("[^a-zA-Z]*", ini_string))
 
+# read input file & key
 plaintext = inputFile.read()
 key = keyFile.read()
 
-print(plaintext)
+#print(plaintext)
 
+# clean the plaintext , clean spaces or any other non alphabtic char
 plaintextClean = "".join(re.split("[^a-zA-Z]*", plaintext))
 
-print(plaintextClean)
+#print(plaintextClean)
 
 def litering_by_three(a):
     return ' '.join([a[i:i + 5] for i in range(0, len(a), 5)])
@@ -47,46 +72,37 @@ def litering_by_three(a):
 #print(inputFile.read())
 #outputFile.write(" ami banglay hashi , banglay vashi")
 
+
+# function to convert plaintext to ciphertext
 def cypherConvert(plaintextClean, key):
     
-    plaintextLen = len(plaintextClean)
+    plaintextLen = len(plaintextClean) #get lenth of text
     j = 0
     cyphertext = ""
     chara = ""
     charcipher = 0
-    keyLen = len(key)
+    keyLen = len(key)                 # get len of key      
     for i in range(plaintextLen):
-       #print(plaintextClean[i])
+       # if key limit has been reached, start from starting of key string
        if(j==keyLen):
            j=0
-       chara = plaintextClean[i]    
-       charcipher = ((dicti[plaintextClean[i]]+dicti[key[j]])%52)
-       """
-       if(chara.isupper()):
-           charcipher = ((ord(plaintextClean[i])+ord(key[j])-65-65)%52)
-           #charcipher+=ord('A')
-           chara = chr(charcipher+65) 
-       else :
-           charcipher = ((ord(plaintextClean[i])+ord(key[j])-97-97)%52)
-           #charcipher+=ord('a')
-       """ 
-       chara = alphlist[charcipher]
-       cyphertext+=chara
        
-       j+=1
-    temp = ""
-    lenth = len(cyphertext)-5
-    print(len(cyphertext))
-    """
-    for i in range(lenth):
-        if (i+1)%6 == 0:
-            print(i+1)
-            temp = cyphertext[0:i] + ' ' + cyphertext[i:]
-            cyphertext = temp
-    """
+       chara = plaintextClean[i]  # get plaintext character    
+       # cipher the character & get e int value
+       charcipher = ((dicti[plaintextClean[i]]+dicti[key[j]])%52)
+       
+       # get the cipher char
+       chara = alphlist[charcipher]
+       cyphertext+=chara       # add it to cipher text
+       
+       j+=1 # proceed to next key
+    
+    # get spaces after each 5 char
     cyphertext = litering_by_three(cyphertext)
     return cyphertext
 
+
+# function to cipher to plain text
 def cypherToPlain(cipherText,key):
     ciphertextLen = len(cipherText)
     j = 0
@@ -95,24 +111,24 @@ def cypherToPlain(cipherText,key):
     charplain = 0
     keyLen = len(key)
     for i in range(ciphertextLen):
-       #print(plaintextClean[i])
+       
+       # if key limit has been reached, start from starting of key string
        
        if(j==keyLen):
            j=0
-       chara = cipherText[i]    
-       if chara==" ":
+       chara = cipherText[i]  # ciphertext char   
+       if chara==" ":         # if it is space, do nothing
            continue
+       # convert from cipher text to plaintext int value
        charplain = ((dicti[cipherText[i]]-dicti[key[j]])%52)
-       """
-       if(chara.isupper()):
-           charplain+=ord('A')
-       else :
-           charplain+=ord('a')
-    """
+       
+       # get int to plain text
        chara = alphlist[charplain]    
        convertedplaintext+=chara
        
+       # proceed to next key
        j+=1
+    convertedplaintext=litering_by_three(convertedplaintext)
     return convertedplaintext
 
 cyphertext = cypherConvert(plaintextClean, key)
