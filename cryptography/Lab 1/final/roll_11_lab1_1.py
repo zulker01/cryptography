@@ -123,24 +123,27 @@ keyFile = open(keyFileName,'r+')
 plaintext = inputFile.read()
 key = keyFile.read()
 
-#print(plaintext)
+print("The  given plaintext :\n")
+print(plaintext)
 
 # clean the plaintext , clean spaces or any other non alphabtic char
 plaintextClean = "".join(re.split("[^a-zA-Z]*", plaintext))
 
-#print(plaintextClean)
+print("plaintext after cleaning :\n")
 
-#clean plaintext
+print(plaintextClean)
+
+
 
 
 #convert plaintext to cipher text
 cyphertext = cypherConvert(plaintextClean, key)
-print("cipher text : ")
+print("converted cipher text :\n")
 print(cyphertext)  # print the ciphertext
 print()
 outputFile.write(cyphertext)  # write cipher text to file
 convertedplaintext = cypherToPlain(cyphertext, key) # convert cipher to plain
-print("plain text : ")
+print("converted plain text : \n")
 print(convertedplaintext)
 
 # close file

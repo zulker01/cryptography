@@ -176,6 +176,9 @@ original_plaintxtFile = open(originaltxtFileName,'r+')
 cipherText = cipherFile.read()
 original_plaintxt = original_plaintxtFile.read()
 
+print("The original plain text file : \n\n")
+print(original_plaintxt)
+
 # clean the cipher text 
 cipherTextClean = "".join(re.split("[^a-zA-Z]*", cipherText))
 
@@ -193,7 +196,7 @@ numofrepeatation = {} # num of time a seq is repeated
 
 # Repeated sequence lenght within 5 to 8, smaller or greater len string repeatation will be
 # ignore, this range can be updated to find more frequent string patter
-for repeatLen in range(5,8):
+for repeatLen in range(3,8):
     # loop for every char in cipher text
     for strStart in range(len(cipherTextClean)-repeatLen):
         #get the targetted sequence
@@ -224,7 +227,8 @@ factorList=get_factors(repeatLenNumbers)
 # calculate the frequency of the factors 
 frequency = collections.Counter(factorList)
 
-
+# how many keys to take for prediction
+how_many_keys_to_search = len(cipherTextClean)
 
 # get most frequent  items
 
@@ -240,6 +244,7 @@ if(freq_count>how_many_keys_to_search):
 most_freq_two_list = frequency.most_common(freq_count)
 most_freq_two_list2 = frequency.most_common(freq_count)
 
+"""
 # NOW if two factors has same frequency , we have to check if 
 # those two are each others factor,
 # for example, if 2 has frequency =315 & 
@@ -257,7 +262,7 @@ for i in range(freq_count):
                 most_freq_two_list2.remove( most_freq_two_list[i-1]) 
 
 
-
+"""
 print("predicted key lens ( max "+str(how_many_keys_to_search)+" key lengths):")
 for i in range(len(most_freq_two_list2)):
     print(most_freq_two_list2[i][0])     
@@ -266,16 +271,42 @@ for i in range(len(most_freq_two_list2)):
 
 
 
-
-
+# max percantage
+max_percant =-99
+max_percant_i = 0
+cur_percant = 0;
 # loop for every possible key len to predict key & get success percantage of predicting plaintext
 for i in range(len(most_freq_two_list2)):
     pred_keylen = most_freq_two_list2[i][0] # get i'th keylen
     predicted_key = predict_the_key(pred_keylen) # predict the key
     print("\n\nPredicted Key : "+predicted_key)
     get_the_plaintxt = cypherToPlain(cipherTextClean, predicted_key) 
+    
     print("for length : "+str(pred_keylen))
-    print("success rate: " +str(get_percantage_of_match(get_the_plaintxt,original_plaintxt))+" %")           
+    print("\n")
+    print(get_the_plaintxt)
+    cur_percant = get_percantage_of_match(get_the_plaintxt,original_plaintxt)
+    print("success rate: " +str(cur_percant)+" %")           
+    print("\n\n *************  ***********  *******\n\n\n")
+    
+    if cur_percant>=max_percant:
+        max_percant_i = i
+        max_percant = cur_percant
+
+
+#print("\n\n******** ans : *********")
+pred_keylen = most_freq_two_list2[max_percant_i][0] # get i'th keylen
+predicted_key = predict_the_key(pred_keylen) # predict the key
+print("\n\nPredicted Key : "+predicted_key)
+get_the_plaintxt = cypherToPlain(cipherTextClean, predicted_key) 
+
+print("for length : "+str(pred_keylen))
+print("\n")
+print(get_the_plaintxt)
+cur_percant = get_percantage_of_match(get_the_plaintxt,original_plaintxt)
+print("success rate: " +str(cur_percant)+" %")           
+
+
 # close the file
 cipherFile.close()
 original_plaintxtFile.close()
