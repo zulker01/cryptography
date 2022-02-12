@@ -3,6 +3,7 @@ def convertInByte(msg):
 
 
 def xor_Strings(a, b):
+    
     return a ^ b
 
 
@@ -10,11 +11,14 @@ def encryption(msg, pad):
     msg = convertInByte(msg)
     pad = convertInByte(pad)
     cipher = bytearray()
+    print(type(msg[0]))
     cipher.append(xor_Strings(msg[0], pad[0]))
-
+    
     for i in range(1, len(msg)):
         temp = (cipher[i-1] + pad[i]) % 256
+        
         cipher.append(xor_Strings(msg[i], temp))
+    print(cipher.hex())
     return cipher.hex()
 
 
