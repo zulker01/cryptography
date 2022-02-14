@@ -94,14 +94,16 @@ def depthFirstSearch(problem):
     visited = []                    # visited list stores which nodes are already visited, those won't be visited again  ( to avoid infinite loop )
     pathFromRootToDst=[]                         # list which stores the ans, which path to follow for reaching destination
     pathToCurrent=Stack()        #check*   # Stack to maintaing path from start to a state
-    presentHop = nextHop.pop()
-    while not problem.isGoalState(presentHop):
-        if presentHop not in visited:
-           visited.append(presentHop)
-           successors = problem.getSuccessors(presentHop)
-           for child,direction,cost in successors:
-               nextHop.push(child)
-               tempPath =  pathFromRootToDst+ [direction]
+    presentHop = nextHop.pop()        # this stores the present node
+    while not problem.isGoalState(presentHop):   # loop until goal node is not visited
+        if presentHop not in visited:            # if present node is not visited,
+        
+           visited.append(presentHop)            # we have to add it to visited, means this node is visited
+           successors = problem.getSuccessors(presentHop)  # get the successors of this present node
+           successors.sort(key = lambda x: x[2])          # sort the successors, according to theircost
+           for node in successors:                     # loop to all successors
+               nextHop.push(node[0])                   # push adjacent node to next hop stack
+               tempPath =  pathFromRootToDst+ [node[1]]
                pathToCurrent.push(tempPath)
         presentHop = nextHop.pop()
         pathFromRootToDst = pathToCurrent.pop()
