@@ -213,7 +213,7 @@ print(msgwordlen)
 words=[]
 i=0
 for line in wordFile:
-    tmpstr = wordFile.readline()
+    tmpstr = line
     if tmpstr.find("networks")!=-1:
         print(len(words))
         print(tmpstr)
