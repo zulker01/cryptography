@@ -86,38 +86,127 @@ def depthFirstSearch(problem):
     print "Is the start a goal?", problem.isGoalState(problem.getStartState())
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
+    
+    
+    
+    #************************************************************************************
+    
     "*** YOUR CODE HERE ***"
     
-    from util import Stack
-    nextHop = Stack()                # nextHop stores the path which will be visited next
-    nextHop.push(problem.getStartState()) # visit root node
-    visited = []                    # visited list stores which nodes are already visited, those won't be visited again  ( to avoid infinite loop )
+    """
+    DFS algorithm searches for every possible node from any node, it pushes the initial node
+    in the stack, then finds the adjacent node of the top of stack, then add those adjacent nodes to visit
+    if the destination node is found, this is stopped. else if no node is stack, , destination is not reachable
+    
+    """
+    
+    
+    nextHop = util.Stack()                      # nextHop stores the path which will be visited next
+    nextHop.push(problem.getStartState())       # visit root node
+    visited = []                                # visited list stores which nodes are already visited, those won't be visited again  ( to avoid infinite loop )
     pathFromRootToDst=[]                         # list which stores the ans, which path to follow for reaching destination
-    pathToCurrent=Stack()        #check*   # Stack to maintaing path from start to a state
-    presentHop = nextHop.pop()        # this stores the present node
-    while not problem.isGoalState(presentHop):   # loop until goal node is not visited
+    
+    pathToCurrent= util.Stack()                 # this stack stores the path to current node
+    presentHop = problem.getStartState()        # this stores the present node
+   
+    while not nextHop.isEmpty():                # loop until stack is not empty i.e not all node visied
+        presentHop = nextHop.pop()              # get the top of stack , which node to visit
+        if problem.isGoalState(presentHop):     # if current node is destination node , path found, break & return path
+            break
         if presentHop not in visited:            # if present node is not visited,
         
            visited.append(presentHop)            # we have to add it to visited, means this node is visited
-           successors = problem.getSuccessors(presentHop)  # get the successors of this present node
-           successors.sort(key = lambda x: x[2])          # sort the successors, according to theircost
-           for node in successors:                     # loop to all successors
-               nextHop.push(node[0])                   # push adjacent node to next hop stack
-               tempPath =  pathFromRootToDst+ [node[1]]
-               pathToCurrent.push(tempPath)
-        presentHop = nextHop.pop()
-        pathFromRootToDst = pathToCurrent.pop()
-    return pathFromRootToDst
+           successors = problem.getSuccessors(presentHop)       # get the successors of this present node
+           successors.sort(key = lambda x: x[2])                # sort the successors, according to theircost
+           for node in successors:                              # loop to all successors
+               nextHop.push(node[0])                            # push adjacent node to next hop stack
+               tempPath =  pathFromRootToDst+ [node[1]]         # add the path of next hop with path of present node
+               pathToCurrent.push(tempPath)                     # push the path also in another stack, next
+                                                               # when the node will be popped, his path will be popped alongside
+                                                               # as both stack ( node's stack & path's stack) are pushed & popped alongside
+                                                                 # so they will maintain order
+        pathFromRootToDst = pathToCurrent.pop()                 # get the next nodes path  for next loop
+        
+    return pathFromRootToDst                                 # when loop is broken, path from root to destination will be retuned
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
+    
+    # the BFS search algorithm does the search will visiting every adjacent node at once
+    # so the path from source to destination is found faster
+    # first source node is pushed to queue, then it is popped & all of its adjacent one is pushed in
+    # loop is looped untill queue is not empty, or destination reached
+    from util import Queue
+    nextHop = Queue()                           # nextHop stores the path which will be visited next
+    nextHop.push(problem.getStartState())       # visit root node
+    visited = []                                  # visited list stores which nodes are already visited, those won't be visited again  ( to avoid infinite loop )
+    pathFromRootToDst=[]                         # list which stores the ans, which path to follow for reaching destination
+    
+    pathToCurrent=Queue()                       # this stack stores the path to current node
+    presentHop = problem.getStartState()        # this stores the present node
+     
+    while not nextHop.isEmpty():                 # loop until stack is not empty i.e not all node visied
+        presentHop = nextHop.pop()               # get the top of stack , which node to visit
+        if problem.isGoalState(presentHop):      # if current node is destination node , path found, break & return path
+           break
+        if presentHop not in visited:            # if present node is not visited,
+        
+           visited.append(presentHop)            # we have to add it to visited, means this node is visited
+           successors = problem.getSuccessors(presentHop)  # get the successors of this present node
+           for node in successors:                         # loop to all successors
+               if node[0] not in visited:                  # if this adjacent node is not visitd
+                   nextHop.push(node[0])                   # push adjacent node to next hop stack
+                   tempPath =  pathFromRootToDst+ [node[1]] # add the path of next hop with path of present node
+                   pathToCurrent.push(tempPath)             # push the path also in another path, next
+                                                           # when the node will be popped, his path will be popped alongside
+        pathFromRootToDst = pathToCurrent.pop()            # pop the path for the node , for next loop
+       
+    return pathFromRootToDst                              # return the path from source to destination
+
+    
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
+    """
+    this uniform cost search function searches path with least cost, it maintains a priority queue
+    which sorts the queue according to the priority of the cost value. least cost node is place top of the queue
+    and discoverd faster
+    """
+    
+    from util import PriorityQueue
+    nextHop = PriorityQueue()                      # nextHop stores the path which will be visited next
+    nextHop.push(problem.getStartState(),0)         # visit root node with cost 0
+    visited = []                                    # visited list stores which nodes are already visited, those won't be visited again  ( to avoid infinite loop )
+    pathFromRootToDst=[]                            # list which stores the ans, which path to follow for reaching destination
+    
+    pathToCurrent=PriorityQueue()                   # this stack stores the path to current node
+    presentHop = (problem.getStartState(),0)        # this stores the present node
+     
+    while not nextHop.isEmpty():                    # loop until stack is not empty i.e not all node visied
+        presentHop = nextHop.pop()                  # get the top of stack , which node to visit
+        if problem.isGoalState(presentHop):         # if current node is destination node , path found, break & return path
+            break
+        if presentHop not in visited:                # if present node is not visited,
+        
+           visited.append(presentHop)                # we have to add it to visited, means this node is visited
+           successors = problem.getSuccessors(presentHop)  # get the successors of this present node
+           for node in successors:                     # loop to all successors
+               if node[0] not in visited:              # if this adjacent node is not visitd
+                   tempPath =  pathFromRootToDst+ [node[1]]         # add the path of next hop with path of present node
+                   tempCost = problem.getCostOfActions(tempPath)    # get the cost of source from this new added node
+                   nextHop.push(node[0],tempCost)                   # push adjacent node to next hop stack
+                   
+                   pathToCurrent.push(tempPath,tempCost)             # push the path also in another path, next
+                                                                       # when the node will be popped, his path will be popped alongside
+        pathFromRootToDst = pathToCurrent.pop()
+       
+    return pathFromRootToDst                                        # return the path from source to destination
+        
+    
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
@@ -130,6 +219,43 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
+    
+    """
+    Astar search is muchly used in AI, here, least path from source to destination is searched. 
+    here we will use heuristic cost, which is the estimated cost from a node to destination
+    so we can estimate if choosing any node will be the lowest cost one , to reach destination
+    """
+    from util import PriorityQueue
+    nextHop = PriorityQueue()                      # nextHop stores the path which will be visited next
+    nextHop.push(problem.getStartState(),0)          # visit root node
+    visited = []                                    # visited list stores which nodes are already visited, those won't be visited again  ( to avoid infinite loop )
+    pathFromRootToDst=[]                            # list which stores the ans, which path to follow for reaching destination
+    
+    pathToCurrent=PriorityQueue()                    # this stack stores the path to current node
+    presentHop = (problem.getStartState(),0)        # this stores the present node
+     
+    while not nextHop.isEmpty():                     # loop until stack is not empty i.e not all node visied
+        presentHop = nextHop.pop()                      # get the top of stack , which node to visit
+        if problem.isGoalState(presentHop):          # if current node is destination node , path found, break & return path
+           break
+        if presentHop not in visited:                    # if present node is not visited,
+            
+           visited.append(presentHop)                    # we have to add it to visited, means this node is visited
+           successors = problem.getSuccessors(presentHop)  # get the successors of this present node
+           for node in successors:                       # loop to all successors
+               if node[0] not in visited:                # if this adjacent node is not visitd
+                   tempPath =  pathFromRootToDst+ [node[1]]  # add the path of next hop with path of present node
+                   tempCost = problem.getCostOfActions(tempPath)+ heuristic(node[0],problem)  # get the cost of source from this new added node
+                                                                                               # here the heurisitic function uses the node[0], ( node ) & graph to estimate cost to destination
+                                                                                               # so cost of reaching the adjacent node & cost to destination is added find cost for this node
+                   nextHop.push(node[0],tempCost)                   # push adjacent node to next hop stack
+                   
+                   pathToCurrent.push(tempPath,tempCost)             # push the path also in another path, next
+                                                               # when the node will be popped, his path will be popped alongside
+        pathFromRootToDst = pathToCurrent.pop()
+       
+    return pathFromRootToDst                                # return the path from source to destination
+    
     util.raiseNotDefined()
 
 
