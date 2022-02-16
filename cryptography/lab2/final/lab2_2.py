@@ -1,8 +1,17 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Feb 12 11:28:13 2022
 
-@author: User
+
+@author: Zulker Nayeen
+Roll : FH -11
+
+This code is simple encrytion & decrytion using one time pad
+with given formula
+
+ci = mi + (c[i-1]+pi)%256
+mi = ci + (c[i-1]+pi) %256
+
+
 """
 # convert string to hexadecimal string
 def str_2_hex_string(str1):

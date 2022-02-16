@@ -1,8 +1,22 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Feb 11 15:10:44 2022
 
-@author: User
+
+@author: Zulker Nayeen
+Roll : FH -11
+
+this code shows vulnerability of One time pad reused
+
+if otp is reused : 
+    cipher1  = msg1^pad
+    cipher2 = msg2^pad
+    
+    cipher1^cipher2 = msg1^pad ^msg2^pad
+                    = msg1 ^ msg2
+so if we calculate , ciph1 ^ ciph2 ^ msg1 = msg2
+
+if we can get all possible msg1 to xor, then we
+predict msg 2 easily
 
 
 """

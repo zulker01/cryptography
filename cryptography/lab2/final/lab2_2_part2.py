@@ -1,8 +1,23 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Feb 12 19:19:27 2022
 
-@author: User
+
+@author: Zulker Nayeen
+Roll : FH-11
+
+This  code is breaking the ciphertexts which reused one time pad 
+though it has different encryption ; ci = mi xor (c[i-1] +pi) % 256 ,
+we can predict the msg
+
+
+here we will predict the pad for every position, if a char produces valid english character
+for same position of every cipehr text, then it is a possible pad
+
+then we try all possible combination of pad to get word, the pad who has max word count
+is the possible pad
+
+then we decrypt the msg with probable pad
+
 """
 import json,numpy as np,re,itertools,heapq
 
@@ -121,7 +136,7 @@ cipherList = []
 words=set()
 cipherCount = 0
 i=0
-
+allPossKeyLen = 16
 tmpstr = ""
 #valid characterlist
 validChar = [" ",",","(",")"]
@@ -238,10 +253,10 @@ validPad =""
 cipherTextFile.close()
 # code to get all possible pads for 0 to 15th position
 
-for padStart in range(0,len(cipherList[0]),15):
+for padStart in range(0,len(cipherList[0]),allPossKeyLen):
     goodWordCount={}  # dictionary to store probable pad with good word count: {"waserwaqet":10}
     # get 15 pads
-    somelists= possiblePad2[padStart:padStart+15]
+    somelists= possiblePad2[padStart:padStart+allPossKeyLen]
     allprobablePad=[]
     # get all possible pad list
     for element in itertools.product(*somelists):
