@@ -4,7 +4,7 @@ Created on Sat Feb 12 11:28:13 2022
 
 @author: User
 """
-
+# convert string to hexadecimal string
 def str_2_hex_string(str1):
     # convert to byte by encode :
     bite = str1.encode("utf-8")
@@ -12,7 +12,7 @@ def str_2_hex_string(str1):
     hex_string = bite.hex()
     # return the hex string
     return hex_string
-
+# convert hexa string to int value
 def hex_str_2_int_val(str1):
     #insert 0x if not inserted
     if len(str1)==0:
@@ -26,57 +26,39 @@ def hex_str_2_int_val(str1):
     #print(str(str1)+" "+str(aInt))
     return     aInt
 
-def xor_2_hex_string(str1,str2):
-    hexint1 = hex_str_2_int_val(str1)
-    hexint2 = hex_str_2_int_val(str2)
-    
-    hexored = hexint1^hexint2
-    return hexored.to_bytes(1, "big")
 
-def xor_2_string(str1,str2):
-    return str1^str2
-"""
+# convert msg to cipher
 def convert_2_cipher(msg,pad):
-    cipher=[]
-    #cipher.append(str_2_hex_string(msg[0]),str_2_hex_string(pad[0]))
-    cipher.append(xor_2_hex_string(str_2_hex_string(msg[0]),str_2_hex_string(pad[0])))
+    cipher=bytearray()  # bytearrray type var
+    msgbytes = (bytearray(msg,"ascii"))  # convert msg ascii to bytearrya
+    padbytes = (bytearray(pad,"ascii"))  # convert pad ascii to bytearray
+    # get zeroth cipher
+    cipher.append((msgbytes[0]^((0+padbytes[0])%256)))
     
-    padbyte =bytearray(pad,"ascii")
-    for i in range(1,len(msg)):
-        tmp = (cipher[i-1] + padbyte[i]) % 256
-        cipher.append(xor_2_hex_string(str_2_hex_string(msg[0]),tmp))
-"""
-def convert_2_cipher(msg,pad):
-    cipher=bytearray()
-    msgbytes = (bytearray(msg,"ascii"))
-    padbytes = (bytearray(pad,"ascii"))
-    print(type(msgbytes[0]))
-    print(bytearray(msg[0],"ascii"))
-    cipher.append((msgbytes[0]^padbytes[0]))
-    
+    # loop through 1 to last cipher
     for i in range(1,len(msgbytes)):
-        #print(str(i)+" len msg "+str(len(msgbytes)))
-        tmp = (cipher[i-1]+padbytes[i])%256
-        cipher.append(msgbytes[i]^tmp)
         
-    print(type(cipher[0]))
-    print(cipher.hex())
-    return cipher.hex()
-    
-def convert_2_plain(cipher,pad):
-    plaintxt= bytearray()
-    cipherbytes = bytearray.fromhex(cipher)
-    padbytes = (bytearray(pad,"ascii"))
-   
-    plaintxt.append((cipherbytes[0]^padbytes[0]))
-    
-    for i in range(1,len(cipherbytes)):
-        tmp = (cipherbytes[i-1]+padbytes[i])%256
-        plaintxt.append(cipherbytes[i]^tmp)
+        tmp = msgbytes[i]^((cipher[i-1]+padbytes[i])%256) # ci = (mi xor (pi+ci-1)%256)
+        cipher.append(tmp)
         
-    print(type(cipher[0]))
+    return cipher.hex()  # conveert bytearrya to hex cipher text
 
-    return plaintxt.decode("utf-8")
+# function converts cipiher to plain text
+def convert_2_plain(cipher,pad):
+    plaintxt= bytearray()  # get byte arry, which is byte from of the string
+    cipherbytes = bytearray.fromhex(cipher)    # cipiher text bytes
+    padbytes = (bytearray(pad,"ascii"))     # convert pad bytes to from ascii to bytearry
+   
+    plaintxt.append(((0+padbytes[0])%256)^cipherbytes[0])  # get first char of plaintxt
+    
+    # loop through 2nd  to last positoin to get ciphertext
+    for i in range(1,len(cipherbytes)):
+        tmp = cipherbytes[i]^((cipherbytes[i-1]+padbytes[i])%256)  # mi = (ci xor (pi+ci-1)%256)
+        plaintxt.append(tmp)
+        
+    
+
+    return plaintxt.decode("utf-8")   # decode bytearray to ascii string
 
 
 
@@ -87,7 +69,11 @@ def convert_2_plain(cipher,pad):
 msg1 = "iamagoodboy"
 pad1 = "deceiptives"
 
+# convert the message to cipher
+print("\n")
 cipher = convert_2_cipher(msg1, pad1)
-print("Encrypting (ans is in hex) :\n "+ msg1+" -> "+cipher)
+print("Encrypting (ans is in hex) :\n \n"+ msg1+" -> "+cipher)
+print("\n")
+# convert cipher to plain
 plain = convert_2_plain(cipher, pad1)
-print("decrypting (hex cipher to plain) " +cipher+" -> "+plain)
+print("decrypting (hex cipher to plain)\n\n " +cipher+" -> "+plain)
