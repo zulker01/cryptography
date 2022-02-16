@@ -4,7 +4,7 @@ Created on Sat Feb 12 19:19:27 2022
 
 @author: User
 """
-import json,numpy as np
+import json,numpy as np,re,itertools,heapq
 
 
 
@@ -28,12 +28,14 @@ for line in wordFile:
     #print(tmpstr)
     # readline adds an extra newline end of the word, so cut it
     tmpstr = tmpstr[0:-1]
-    
+    if len(tmpstr)<=1:
+        continue
+    tmpstr.lower() # get lowercase for max match
     #if len(tmpstr)!=msgwordlen or (not tmpstr.isalpha()):
         #continue
     words.add(tmpstr)
 #print("word len "+str(len(words)))
-
+words.add("a")
 tmpstr = ""
 # read the cipher text file & store in a list 
 cipherList = []
@@ -274,8 +276,9 @@ def getCipherText():
 def convert_2_plain(cipherNo,cipherStartIndex,cipherEndIndex,pad):
     plaintxt=""
     j=0
-    for i in range(cipherStartIndex,cipherEndIndex+1):
-       # print("for cipher no "+str(cipherNo)+" position i="+str(i)+" pad is "+str(ord(pad[j])))
+    #print("called for "+str(cipherNo)+" "+str(cipherNo)+" "+str(cipherStartIndex)+" "+str(cipherEndIndex)+" "+pad)
+    for i in range(cipherStartIndex,cipherEndIndex):
+        #print("for cipher no "+str(cipherNo)+" position i="+str(i)+" pad is "+str(ord(pad[j])))
         if i==0:  # 0th position decrytpion
             plaintxt+=chr(cipherList[cipherNo][i]^ord(pad[j]))
         else:
@@ -290,14 +293,113 @@ def convert_2_plain(cipherNo,cipherStartIndex,cipherEndIndex,pad):
 cipherListText= getCipherText()
 #print(cipherListText[0])
 #msg from 5 padlen
-def checkMsgWithDictionary(pad):
-    for i in range(cipherCount):
-        plaintxt = convert_2_plain(i,0,59, pad)
-        print(plaintxt)
-checkMsgWithDictionary("wKt3UqHiLNrOT1GaGXtNqfqWTA37c8kEtinm`nOfyDBbMHpH75h6cGWaDap1")
-cipherTextFile.close()
-
+# dictionary to count which pad has how many good words
 """
+goodWordCount={}
+def checkMsgWithDictionary(pad):
+    maxLenLastWord=0    # the last word which might be spilited , i.e : "develo" so have to check along with prev 6 msg in next iter
+    goodwrd=0
+    for i in range(cipherCount):
+        plaintxt = convert_2_plain(i,0,len(pad), pad)
+        #print(plaintxt)
+        words_of_msg = re.split(r"[-!,.?()\s]\s*", plaintxt)
+       # print(words_of_msg)
+        #print("\n**********\n")
+        if(len(words_of_msg[len(words_of_msg)-1]))>maxLenLastWord:
+            maxLenLastWord = (len(words_of_msg[len(words_of_msg)-1]))
+        # check every word before the last one as that might be splited
+        for j in range(len(words_of_msg)-1):
+            #check if the word is found in dict 
+            if words_of_msg[j].lower() in words:
+                goodwrd+=1
+                #print(words_of_msg[j])
+    if goodwrd>0:
+        goodWordCount[pad]=goodwrd
+    #print(goodWordCount)
+    #print("max len of last msg wrd"+str(maxLenLastWord))
+
+cipherTextFile.close()
+# code to get all possible pads for 0 to 10th position
+somelists= possiblePad2[0:10]
+allprobablePad=[]
+for element in itertools.product(*somelists):
+    allprobablePad.append("".join(element))
+print(len(allprobablePad))
+
+for i in range(len(allprobablePad)):
+    checkMsgWithDictionary(allprobablePad[i])
+# get the top pad who have highest msg word 
+# corner case : check if top 4-5 values has same count. if no pad has highest
+topPad =  sorted(goodWordCount, key=goodWordCount.get, reverse=True)[:1]
+print(topPad)
+"""
+# valid pad which is the ans 
+validPad =""
+
+
+def checkMsgWithDictionary(pad,cipherStartIndex):
+    maxLenLastWord=0    # the last word which might be spilited , i.e : "develo" so have to check along with prev 6 msg in next iter
+    goodwrd=0
+    
+    for i in range(cipherCount):
+        plaintxt = convert_2_plain(i,cipherStartIndex,cipherStartIndex+len(pad), pad)
+        #print(plaintxt)
+        words_of_msg = re.split(r"[-!,.?()\s]\s*", plaintxt)
+       # print(words_of_msg)
+        #print("\n**********\n")
+        if(len(words_of_msg[len(words_of_msg)-1]))>maxLenLastWord:
+            maxLenLastWord = (len(words_of_msg[len(words_of_msg)-1]))
+        # check every word before the last one as that might be splited
+        for j in range(len(words_of_msg)-1):
+            #check if the word is found in dict 
+            if words_of_msg[j].lower() in words:
+                goodwrd+=1
+                #print(words_of_msg[j],end=" * ")
+    #if goodwrd>0:
+        #goodWordCount[pad]=goodwrd
+    return goodwrd
+    #print(goodWordCount)
+    #print("max len of last msg wrd"+str(maxLenLastWord))
+
+cipherTextFile.close()
+# code to get all possible pads for 0 to 10th position
+
+for padStart in range(0,len(cipherList[0]),10):
+    goodWordCount={}
+    somelists= possiblePad2[padStart:padStart+10]
+    allprobablePad=[]
+    for element in itertools.product(*somelists):
+        allprobablePad.append("".join(element))
+    
+    print(str(len(allprobablePad))+" for loop pad start "+str(padStart))
+    #checkMsgWithDictionary("rOT1GaGXtN")
+    for i in range(len(allprobablePad)):
+        goodwrd=checkMsgWithDictionary(allprobablePad[i],padStart)
+        goodWordCount[allprobablePad[i]] = goodwrd
+        
+    # get the top pad who have highest msg word 
+    # corner case : check if top 4-5 values has same count. if no pad has highest
+    topPad =  sorted(goodWordCount, key=goodWordCount.get, reverse=True)[:8]
+    for pad in topPad:
+        print(pad+" "+str(goodWordCount[pad]))
+    validPad+=topPad[0]
+
+    
+print("succss : ")
+print("wKt3UqHiLNrOT1GaGXtNqfqWTA37c8kEtinm`nOfyDBbMHpH75h6cGWaDap1")
+print(validPad)
+
+print(" retrieved msgs : **********\n\n")
+for i in range(cipherCount):
+    plaintxt = convert_2_plain(i, 0, len(cipherList[i]), validPad)
+    print(plaintxt)
+    print("")
+"""
+***** cheat shit ***
+
+wKt3UqHiLNrOT1GaGXtNqfqWTA37c8kEtinm`nOfyDBbMHpH75h6cGWaDap1
+
+
 # ***************Tough Part****************
 # ******************************************
 # ***********Check words in dictionary*****
