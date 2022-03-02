@@ -131,11 +131,11 @@ cipherTextFile = open(cipherTextFileName,"r+")
 wordFileName = "word_from_ubuntu.txt"
 
 wordFile = open(wordFileName,"r")
-cipherList = []
+cipherList = [] # list of all ciphertexts
 #retrieve the words
-words=set()
-cipherCount = 0
-i=0
+words=set()  
+cipherCount = 0  # count how many cipher texts
+
 allPossKeyLen = 16
 tmpstr = ""
 #valid characterlist
@@ -239,7 +239,7 @@ mi = (c[i-1]+pi)%256) ^ ci
       
 # function call to get probable pad list
 getPossiblePadForEveryPosition()   
-
+print("*********\n\n possible pads for every possitions : ")
 print(possiblePad2)
 
 # get the ciphertext from the cipher list int value
@@ -262,7 +262,7 @@ for padStart in range(0,len(cipherList[0]),allPossKeyLen):
     for element in itertools.product(*somelists):
         allprobablePad.append("".join(element))
     
-    print(str(len(allprobablePad))+" for loop pad start "+str(padStart))
+    #print(str(len(allprobablePad))+" for loop pad start "+str(padStart))
     # get plaintext & check which pad is most probable, chekc of all possible pads
     for i in range(len(allprobablePad)):
         goodwrd=checkMsgWithDictionary(allprobablePad[i],padStart)
@@ -270,19 +270,19 @@ for padStart in range(0,len(cipherList[0]),allPossKeyLen):
         
     # get the top pad who have highest msg word 
     topPad =  sorted(goodWordCount, key=goodWordCount.get, reverse=True)[:8]
-    for pad in topPad:
-        print(pad+" "+str(goodWordCount[pad]))
+    #for pad in topPad:
+        #print(pad+" "+str(goodWordCount[pad]))
     # get the valid pad
     validPad+=topPad[0]
 
 # pad found success    
-print("succss : ")
-print("wKt3UqHiLNrOT1GaGXtNqfqWTA37c8kEtinm`nOfyDBbMHpH75h6cGWaDap1")
+print("succss : \n\nPossble Pad is : \n")
 print(validPad)
 
 # retrieve the msg text
-print(" retrieved msgs : **********\n\n")
+print("\n\n*********retrieved msgs : **********\n\n")
 for i in range(cipherCount):
     plaintxt = convert_2_plain(i, 0, len(cipherList[i]), validPad)
+    print("Text "+str(i))
     print(plaintxt)
     print("")

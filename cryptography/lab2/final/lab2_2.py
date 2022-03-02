@@ -13,27 +13,7 @@ mi = ci + (c[i-1]+pi) %256
 
 
 """
-# convert string to hexadecimal string
-def str_2_hex_string(str1):
-    # convert to byte by encode :
-    bite = str1.encode("utf-8")
-    # covert the byte to hex
-    hex_string = bite.hex()
-    # return the hex string
-    return hex_string
-# convert hexa string to int value
-def hex_str_2_int_val(str1):
-    #insert 0x if not inserted
-    if len(str1)==0:
-        return 0
-    if str1[0:1]!="0x":
-        str1 = "0x"+str1
-    
-    #hex string to int
-    aInt = int(str1, 16)
-    #return int of the hex string
-    #print(str(str1)+" "+str(aInt))
-    return     aInt
+
 
 
 # convert msg to cipher
