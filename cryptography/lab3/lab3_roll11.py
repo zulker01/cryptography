@@ -6,7 +6,7 @@ Created on Wed Mar  2 20:03:42 2022
 """
 
 
-
+import itertools
 
 
 def compare2values(str1,str2):
@@ -35,26 +35,26 @@ def mod(moddivi,moddivisor):
         return moddivi
     while(compare2values(moddivi, moddivisor)!=-1):
         # if both string has same len, then div ans append 1
-        print("ans = "+str(modans)+" divisor = "+moddivisor+ " dividend = "+moddivi)
+        #print("ans = "+str(modans)+" divisor = "+moddivisor+ " dividend = "+moddivi)
         if len(moddivi)==len(moddivisor):
             
             tmpmodans=0b1
             modans = tmpmodans+modans
             moddivi = xorStrings(moddivi,moddivisor)
-            print("inside if : tmpans = "+str(tmpmodans)+" divi= "+moddivi+" ans = "+str(modans))
+            #print("inside if : tmpans = "+str(tmpmodans)+" divi= "+moddivi+" ans = "+str(modans))
         else:
             tmpmodans = 0b1<<(len(moddivi)-len(moddivisor))
             
             tmpmoddivi = leftShift(moddivisor,(len(moddivi)-len(moddivisor)))
             moddivi = xorStrings(tmpmoddivi, moddivi) # new divisor
             modans = tmpmodans+modans
-            print("inside else : tmpans = "+str(tmpmodans)+" tmpdivi = "+str(int(tmpmoddivi,2))+" divi= "+str(int(moddivi,2))+" ans = "+str(modans))
+            #print("inside else : tmpans = "+str(tmpmodans)+" tmpdivi = "+str(int(tmpmoddivi,2))+" divi= "+str(int(moddivi,2))+" ans = "+str(modans))
             
         
         
             
         
-    print("ans = "+str(modans)+" divisor = "+moddivisor+ " dividend = "+moddivi)       
+    #print("ans = "+str(modans)+" divisor = "+moddivisor+ " dividend = "+moddivi)       
         
     return moddivi
     
@@ -115,7 +115,7 @@ def multiply(str1,str2):
        j+=1
        
     return ans
-
+"""
 def division(divi,divisor):
     ans = 0b00
     i = 1
@@ -151,7 +151,50 @@ def division(divi,divisor):
     finalans = str(bin(ans))
     finalans = finalans[2:]    
     return finalans
-     
+"""
+
+def division(dividend,divisor):
+    if len(divisor)<8:
+        tmpstr = ""
+        for i in range(8-len(divisor)):
+            tmpstr+="0"
+        divisor = tmpstr+divisor
+    mulInverseofDivisor = multInverseDict[divisor]
+    return multiply(dividend, mulInverseofDivisor)
+    
+def getAllPossible8bitString():
+    
+    # possible bit for every position
+    possiblebit = ["01","01","01","01","01","01","01","01"]
+    #somelists= possiblePad2[0:len(possiblebit)]  #prodcut done
+    global allpossibleBitString
+    allpossibleBitString=[]
+    
+    # get all possible pad list
+    for element in itertools.product(*possiblebit):
+        currentBin = "".join(element)
+        
+        allpossibleBitString.append(currentBin)
+        
+    #print(allpossibleBitString)
+    
+def calculateMulInverse():
+    global multInverseDict
+    multInverseDict = {}
+    for i in range(256):
+        #if i>3: break
+        for j in range(256):
+            # if we got its mod inverse, continue
+            if allpossibleBitString[i] in multInverseDict:
+                continue
+            multAns = multiply(allpossibleBitString[i], allpossibleBitString[j])
+            #print(multAns+" int : "+str(int(multAns,2)))
+            #if j>4: break
+            if int(multAns,2)==1:
+                multInverseDict[allpossibleBitString[i]] = allpossibleBitString[j]
+                multInverseDict[allpossibleBitString[j]] = allpossibleBitString[i]
+    print(len(multInverseDict))            
+        
 # this function starts appropriate operation
 
 def getAns(input1,input2, operationInput):
@@ -192,4 +235,8 @@ print(" ans = ",ans)
 #mod("1010","11")
 #mod("1000010000100", ip)
 #print(multiply("1010111", "10000011"))
-print(division("10011110", "100110"))
+#print(multiply("0011", "110110"))
+getAllPossible8bitString()
+calculateMulInverse()
+ans = division("100010", "1100")
+print(ans+" int "+str(int(ans,2)))
