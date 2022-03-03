@@ -27,39 +27,36 @@ def compare2values(str1,str2):
       ----------
                -> divi new
 """
-def mod(divi,divisor):
-    ans = 0b00
+def mod(moddivi,moddivisor):
+    modans = 0b00
     i = 1
     # if divisor is already big , return ans
-    if compare2values(divi, divisor)==-1:
-        return divi
-    while(compare2values(divi, divisor)!=-1):
+    if compare2values(moddivi, moddivisor)==-1:
+        return moddivi
+    while(compare2values(moddivi, moddivisor)!=-1):
         # if both string has same len, then div ans append 1
-        #print("ans = "+str(ans)+" divisor = "+divisor+ " dividend = "+divi)
-        if len(divi)==len(divisor):
+        print("ans = "+str(modans)+" divisor = "+moddivisor+ " dividend = "+moddivi)
+        if len(moddivi)==len(moddivisor):
             
-            tmpans=0b1
-            ans = tmpans+ans
-            divi = xorStrings(divi,divisor)
-            #print("inside if : tmpans = "+str(tmpans)+" divi= "+divi+" ans = "+str(ans))
+            tmpmodans=0b1
+            modans = tmpmodans+modans
+            moddivi = xorStrings(moddivi,moddivisor)
+            print("inside if : tmpans = "+str(tmpmodans)+" divi= "+moddivi+" ans = "+str(modans))
         else:
-            tmpans = 0b1<<(len(divi)-len(divisor))
+            tmpmodans = 0b1<<(len(moddivi)-len(moddivisor))
             
-            tmpdivi = leftShift(divisor,(len(divi)-len(divisor)))
-            divi = xorStrings(tmpdivi, divi) # new divisor
-            ans = tmpans+ans
-            #print("inside else : tmpans = "+str(tmpans)+" tmpdivi = "+str(int(tmpdivi,2))+" divi= "+str(int(divi,2))+" ans = "+str(ans))
-        if i==10:
-            break
-        i+=1
+            tmpmoddivi = leftShift(moddivisor,(len(moddivi)-len(moddivisor)))
+            moddivi = xorStrings(tmpmoddivi, moddivi) # new divisor
+            modans = tmpmodans+modans
+            print("inside else : tmpans = "+str(tmpmodans)+" tmpdivi = "+str(int(tmpmoddivi,2))+" divi= "+str(int(moddivi,2))+" ans = "+str(modans))
             
         
         
             
         
-    print("finalans = "+str(ans)+" divisor = "+divisor+ " dividend = "+divi)       
+    print("ans = "+str(modans)+" divisor = "+moddivisor+ " dividend = "+moddivi)       
         
-    return divi
+    return moddivi
     
 
 
@@ -125,9 +122,9 @@ def division(divi,divisor):
     # if divisor is already big , return ans
     if compare2values(divi, divisor)==-1:
         return divi
-    while(compare2values(divi, divisor)!=-1):
+    while(divi!="0"):
         # if both string has same len, then div ans append 1
-        #print("ans = "+str(ans)+" divisor = "+divisor+ " dividend = "+divi)
+        print("ans = "+str(ans)+" divisor = "+divisor+ " dividend = "+divi)
         if len(divi)==len(divisor):
             
             tmpans=0b1
@@ -135,15 +132,15 @@ def division(divi,divisor):
             divi = xorStrings(divi,divisor)
             #print("inside if : tmpans = "+str(tmpans)+" divi= "+divi+" ans = "+str(ans))
         else:
+            print(len(divi))
+            print(len(divisor))
             tmpans = 0b1<<(len(divi)-len(divisor))
             
             tmpdivi = leftShift(divisor,(len(divi)-len(divisor)))
             divi = xorStrings(tmpdivi, divi) # new divisor
             ans = tmpans+ans
             #print("inside else : tmpans = "+str(tmpans)+" tmpdivi = "+str(int(tmpdivi,2))+" divi= "+str(int(divi,2))+" ans = "+str(ans))
-        if i==10:
-            break
-        i+=1
+        
             
         
         
@@ -152,9 +149,9 @@ def division(divi,divisor):
         
     # get bit stream 
     finalans = str(bin(ans))
-    finalans = finalans[1:]    
+    finalans = finalans[2:]    
     return finalans
-        
+     
 # this function starts appropriate operation
 
 def getAns(input1,input2, operationInput):
@@ -191,4 +188,8 @@ ans = getAns(input1,input2,operationInput)
 print(" ans = ",ans)
 """
 #print(" ans  = = = "+str(int(multiply("10011110", "100110"),2)))
-print(mod("1000010000100", ip))
+#print(mod("1000010000100", ip))
+#mod("1010","11")
+#mod("1000010000100", ip)
+#print(multiply("1010111", "10000011"))
+print(division("10011110", "100110"))
