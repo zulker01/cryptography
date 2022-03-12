@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 
+log1 : removed mod () from xor string
 
 Name : Zulker Nayeen
 Roll : FH-11
@@ -16,7 +17,15 @@ import itertools
 # if 1st is big then retunr 1, 2nd big return -1 , same if zero
 def compare2values(str1,str2):
     
+    #print(type(str1))
+    #print(type(str2))
+    #print("first: "+str(int(str1,2)))
+    #print("2nd: "+str(int(str2,2)))
+    # if dividend out of bound of 256
+    if int(str1,2)>255:
+        return 1
     if int(str1,2)>int(str2,2):
+        
         return 1
     elif int(str1,2)<int(str2,2):
         return -1
@@ -25,7 +34,7 @@ def compare2values(str1,str2):
         
 
 
-# divide str1 / str2 
+# divide str1 / str2 1
 """
 1001 ) 101011 ( 100 -> ans
        100100 -> tmp divi
@@ -37,8 +46,10 @@ def compare2values(str1,str2):
 def mod(moddivi,moddivisor):
     modans = 0b00 # ans after mod opertation / reminder
     i = 1
+    #print("ans = "+str(modans)+" divisor = "+moddivisor+ " dividend = "+moddivi)
     # if divisor is already big , return ans
     if compare2values(moddivi, moddivisor)==-1:
+        #print("return do nothing ans = "+str(modans)+" divisor = "+moddivisor+ " dividend = "+moddivi)
         return moddivi
     while(compare2values(moddivi, moddivisor)!=-1):
         # if both string has same len, then div ans append 1
@@ -96,7 +107,7 @@ def xorStrings(str1,str2):
         ans = ans[1:]
         if(len(ans)==1):
                 break
-    return mod(ans,ip)
+    return ans
 
 # left shift string
 def leftShift(str1,cnt):
@@ -126,13 +137,13 @@ def multiply(str1,str2):
        if str2[i]=="1":
            ans = xorStrings(ans, leftShift(str1,j))
        j+=1
-       
-    return ans
+
+    #print("multiply ans : "+ans)   
+    return mod(ans,irrpoly)
 
 # divide the 2 binary strings
 def division(dividend,divisor):
-    getAllPossible8bitString()
-    calculateMulInverse()
+    
     if len(divisor)<8:
         tmpstr = ""
         for i in range(8-len(divisor)):
@@ -156,7 +167,7 @@ def getAllPossible8bitString():
         
         allpossibleBitString.append(currentBin)
         
-    #print(allpossibleBitString)
+    print(" all p ossible Len "+str(len(allpossibleBitString)))
     
 def calculateMulInverse():
     global multInverseDict
@@ -173,7 +184,8 @@ def calculateMulInverse():
             if int(multAns,2)==1:
                 multInverseDict[allpossibleBitString[i]] = allpossibleBitString[j]
                 multInverseDict[allpossibleBitString[j]] = allpossibleBitString[i]
-    #print(len(multInverseDict))            
+                #print("inverse found : "+allpossibleBitString[i]+ "   ->   "+allpossibleBitString[j])
+    #print("multinver : "+str(len(multInverseDict)))            
         
 # this function starts appropriate operation
 
@@ -210,11 +222,16 @@ def check(string) :
 
 # irreducable polynomial
 #x^8 +x^4+ x^3 + x+ 1.
-ip = "100011011"
+irrpoly = "100011011"
+getAllPossible8bitString()
+calculateMulInverse()
 while(True):
     # take input 
+    
     print("\nEnter first polynimial ( As binary bit stream ):")
     input1= input()
+    if input1=="end":
+        break
     if not check(input1):
         print("invalid input  , try again ")
         continue
@@ -230,4 +247,3 @@ while(True):
     ans = getAns(input1,input2,operationInput)
     
     print("\n************\nans = ",ans)
-
