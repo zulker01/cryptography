@@ -244,9 +244,10 @@ def keyExpansion(key):
                 tmpstr ="0"+tmp[0]
             #print(tmp)
         expandedKey.append(xor2word(expandedKey[i-4], tmp))
-        #
+        """
     for i in range(len(expandedKey)):
         print(expandedKey[i])
+        """
     return expandedKey
       
 # rotates word , cnt times , return list of byte
@@ -266,12 +267,22 @@ def subWord(w3):
         indRow = int(tmp[0],16)
         indCol = int(tmp[1],16)
         #print(str(indRow)+" "+str(indCol))
-        tmpword.append(hex(s_box[indRow][indCol])[2:])
+        tmphexStr = hex(s_box[indRow][indCol])[2:]
+        if len(tmphexStr)<2:
+            tmphexStr = "0"+tmphexStr
+        tmpword.append(tmphexStr)
     #print(tmpword)   
     return tmpword
         
-           
+# this subMatrix , takes a 16*16 matrix & calculates substitiuteion
 
+def subMatrix(matrix):
+    newMatrix = []
+    for i in range(4): # for every column
+        tmp = subWord(matrix[i])
+        #print(tmp)
+        newMatrix.append(tmp)                   
+    return newMatrix
     
 
 # calculate RC[j] for key expansion
@@ -301,7 +312,7 @@ index  = | 00 10 20 30
          | 03 13 23 33
 """
 def shiftColumn(matrix):
-    print(matrix)
+    #print(matrix)
     for i in range(4): # for every row of the matrix:
         tmplist=[]
         for j in range(4): # list every element of the row
@@ -310,9 +321,82 @@ def shiftColumn(matrix):
         #print(tmplist)
         for j in range(4):
             matrix[j][i] = tmplist[j]
-        print(matrix[i])
+        #print(matrix[i])
        
-    print(matrix)
+    #print(matrix)
+    return matrix
+
+# this func does the mix column option, 
+# for each column, it calculates the new column with the given equation of AES
+def mixColumn(matrix):
+    new_matrix=[]
+    for i in range(4):  #for every column of the matrix
+        tmplist=[]
+        #for j in range(4):  # for entry in every column
+        #s0, j = (2 * s0, j) ⊕(3 * s1, j) ⊕s2, j⊕s3, j
+        tmplist.append(hex(int((xorStrings(xorStrings(multiply(bin(int(matrix[i][0], 16))[2:], "10") ,
+                                  multiply(bin(int(matrix[i][1], 16))[2:], "11"))
+                                   ,
+                                   xorStrings(bin(int(matrix[i][2], 16))[2:],
+                                              bin(int(matrix[i][3], 16))[2:])
+                                   )),2))[2:])
+        tmplist.append(hex(int((xorStrings(xorStrings(multiply(bin(int(matrix[i][1], 16))[2:], "10") ,
+                                  multiply(bin(int(matrix[i][2], 16))[2:], "11"))
+                                   ,
+                                   xorStrings(bin(int(matrix[i][0], 16))[2:],
+                                              bin(int(matrix[i][3], 16))[2:])
+                                   )),2))[2:])
+        tmplist.append(hex(int((xorStrings(xorStrings(multiply(bin(int(matrix[i][2], 16))[2:], "10") ,
+                                  multiply(bin(int(matrix[i][3], 16))[2:], "11"))
+                                   ,
+                                   xorStrings(bin(int(matrix[i][0], 16))[2:],
+                                              bin(int(matrix[i][1], 16))[2:])
+                                   )),2))[2:])
+        tmplist.append(hex(int((xorStrings(xorStrings(multiply(bin(int(matrix[i][3], 16))[2:], "10") ,
+                                  multiply(bin(int(matrix[i][0], 16))[2:], "11"))
+                                   ,
+                                   xorStrings(bin(int(matrix[i][1], 16))[2:],
+                                              bin(int(matrix[i][2], 16))[2:])
+                                   )),2))[2:])
+        new_matrix.append(tmplist)
+    return new_matrix
+        
+# add round
+
+def addRoundKey(textMatrix,WordMatrix):
+    new_matrix=[]
+    for i in range(4) : # for every column
+        new_matrix.append(xor2word(textMatrix[i], WordMatrix[i]))
+    #print(new_matrix)
+    return new_matrix
+            
+def aesAlgorithm(plaintxt,master_key):
+    plaintxtMat = msg2matrix(plaintxt)
+    
+    
+    expandedKey = keyExpansion(master_key)
+    #print(plaintxtMat)
+    # first add round
+    plaintxtMat= addRoundKey(plaintxtMat, expandedKey[0:4])
+    
+    #print(plaintxtMat)
+    # for the 9 round of encryption
+    for i in range(9):
+        plaintxtMat = subMatrix(plaintxtMat)
+        
+        plaintxtMat = shiftColumn(plaintxtMat)
+        plaintxtMat = mixColumn(plaintxtMat)
+        plaintxtMat = addRoundKey(plaintxtMat, expandedKey[(i+1)*4:((i+1)*4)+4])
+        print(plaintxtMat) 
+        print("\n\n****************\n\n")
+    # for the last round
+    
+    plaintxtMat = subMatrix(plaintxtMat)
+    
+    plaintxtMat = shiftColumn(plaintxtMat)
+    plaintxtMat = addRoundKey(plaintxtMat, expandedKey[40:44])
+    
+    print(plaintxtMat) 
     
 master_key = "0f1571c947d9e8590cb7add6af7f6798"
 calculateRC()
@@ -320,8 +404,28 @@ tmp = ['d2', '85', '46', '79']
 #print(rotateWord(tmp, 1))
 #subWord("7f6798af")
 #expandedKey = keyExpansion(master_key)
+#print(expandedKey[0:4])
 #print(expandedKey)
 #print(subWord("7f6798af"))
+"""
 master_key = "87ec4a8cf26ec3d84d4c46959790e7a6"
 keymatrix = msg2matrix(master_key)
 shiftColumn(keymatrix)
+
+master_key = "876e46a6f24ce78c4d904ad897ecc395"
+keymatrix = msg2matrix(master_key)
+print(mixColumn(keymatrix))
+
+text = "473794ed40d4e4a5a3703aa64c9f42bc"
+key = "ac7766f319fadc2128d12941575c006a"
+txtmat = msg2matrix(text)
+keymat = msg2matrix(key)
+addRoundKey(txtmat, keymat)
+"""
+aesTxt = "0123456789abcdeffedcba9876543210"
+
+aesKey = "0f1571c947d9e8590cb7add6af7f6798"
+
+aesAlgorithm(aesTxt, aesKey)
+
+# ******** xor er result field er baire jay naki check 
