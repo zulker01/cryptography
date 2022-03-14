@@ -167,7 +167,7 @@ def getAllPossible8bitString():
         
         allpossibleBitString.append(currentBin)
         
-    print(" all p ossible Len "+str(len(allpossibleBitString)))
+   # print(" all p ossible Len "+str(len(allpossibleBitString)))
     
 def calculateMulInverse():
     global multInverseDict
