@@ -204,7 +204,9 @@ def getAns(input1,input2, operationInput):
     
 # check if string is valid binary
 def check(string) :
- 
+    
+    if len(string)>8:
+        return False
     # set function convert string
     # into set of characters .
     p = set(string)
